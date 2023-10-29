@@ -1,5 +1,6 @@
 const fs = require('fs/promises')
 const path = require("path")
+const crypto = require('crypto')
 const pathContacts = path.join(__dirname, "./contacts.json")
 
 const listContacts = async () => {
@@ -19,7 +20,6 @@ const getContactById = async (contactId) => {
 
     const contactById = result.filter(contact => contact.id === contactId)
 
-    if(contactById.length === 0) return {"message": "Not found"}
 
     return contactById;
     
@@ -34,7 +34,7 @@ const removeContact = async (contactId) => {
 
     const verifyResult = result.filter(contact => contact.id === contactId);
     
-    if(verifyResult.length === 0) return {"message": "Not found"}
+    if(verifyResult.length === 0) return verifyResult
     
     const newResult = result.filter(contact => contact.id !== contactId);
 
@@ -56,12 +56,12 @@ const addContact = async (body) => {
     
     const contacts = JSON.parse(result)
 
-    if(contacts.filter(contact => contact.name === body.name).length >= 1) return { "message": `Contacto con el nombre ${body.name} ya esta en la lista de contactos` }
+    if(contacts.filter(contact => contact.name === body.name).length >= 1) return false
 
     
-    body.id = "Id-" +  Date.now() + Math.floor(Math.random() * 100);
+    const newContact = {id: crypto.randomUUID(), ...body}
 
-    contacts.push(body);
+    contacts.push(newContact);
 
     await fs.writeFile(pathContacts, JSON.stringify(contacts));
 
@@ -78,15 +78,13 @@ const updateContact = async (contactId, body) => {
 
     const contactById = result.filter(contact => contact.id === contactId);
     
-    if(contactById.length === 0) return {"message": "Not found"}
+    if(contactById.length === 0) return contactById
 
-    const newResult = {...body}
+    const newResult = {id: crypto.randomUUID(), ...body}
 
-    const newContacts = result.filter(contact => contact.id !== contactId);
+    contactById.push(newResult)
 
-    newContacts.push(newResult)
-
-    await fs.writeFile(pathContacts, JSON.stringify(newContacts))
+    await fs.writeFile(pathContacts, JSON.stringify(contactById))
 
     return {"message": `Contact with id ${contactId} has been update`};    
   

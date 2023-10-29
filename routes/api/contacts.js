@@ -11,19 +11,32 @@ const schema = Joi.object({
 });
 
 router.get('/', async (req, res, next) => {
-  const result = await models.listContacts()
+  try {
+    const result = await models.listContacts()
 
-  res.status(200).json(result)
-
-  res.json(result)
+    res.status(200).json(result)
+    
+  
+  } catch (error) {
+    res.status(500).json({"message": "internal error"})
+  }
 })
 
 router.get('/:contactId', async (req, res, next) => {
-  const { contactId } = req.params
+  try {
+    const { contactId } = req.params
 
-  const result = await models.getContactById(contactId)
+    const result = await models.getContactById(contactId)
+  
+    if(result.length === 0) return res.status(404).json({"message": "Not found"})
+  
+    res.status(200).json(result)
+    
+  } catch (error) {
+    
+    res.status(500).json({"message": "internal error"})
 
-  res.json(result)
+  }
 })
 
 router.post('/', async (req, res, next) => {
@@ -36,19 +49,32 @@ router.post('/', async (req, res, next) => {
     
     const result = await models.addContact(newContact)
 
+    if(!result) return res.status(409).json({ "message": `Contacto con el nombre ${req.body.name} ya esta en la lista de contactos` })
+
     res.status(201).send(result)
   
   } catch (error) {
-    console.log(error)
+
+    res.status(500).json({"message": "internal error"})
+  
   }
 })
 
 router.delete('/:contactId', async (req, res, next) => {
-  const { contactId } = req.params
+  try {
 
-  const result = await models.removeContact(contactId)
+    const { contactId } = req.params
 
-  res.json(result)
+    const result = await models.removeContact(contactId)
+    
+    if(result.length === 0) return res.status(404).json({"message": "Not found"})
+    
+    res.status(204).json(result)
+
+  } catch (error) {
+    res.status(500).json({"message": "internal error"})
+  }
+
 })
 
 router.put('/:contactId', async (req, res, next) => {
@@ -62,10 +88,14 @@ router.put('/:contactId', async (req, res, next) => {
     
     const result = await models.updateContact(contactId, newContact)
 
+    if(result.length === 0) return res.status(404).json({"message": "Not found"})
+
     res.status(201).send(result)
   
   } catch (error) {
-    console.log(error)
+    
+    res.status(500).json({"message": "internal error"})
+
   }
 })
 
