@@ -21,7 +21,7 @@ const getContactById = async (contactId) => {
     const contactById = result.filter(contact => contact.id === contactId)
 
 
-    return contactById;
+    return contactById[0];
     
   } catch (error) {
     console.warn(error)
@@ -56,41 +56,37 @@ const addContact = async (body) => {
     
     const contacts = JSON.parse(result)
 
-    if(contacts.filter(contact => contact.name === body.name).length >= 1) return false
-
-    
     const newContact = {id: crypto.randomUUID(), ...body}
 
     contacts.push(newContact);
 
     await fs.writeFile(pathContacts, JSON.stringify(contacts));
 
-    return { "message": body };
+    return { "message": newContact };
 
   } catch (error) {
     console.warn(error)
   }
 }
 
-const updateContact = async (contactId, body) => {
-  try {
-    const result = await JSON.parse((await fs.readFile(pathContacts)).toString())
-
-    const contactById = result.filter(contact => contact.id === contactId);
-    
-    if(contactById.length === 0) return contactById
-
-    const newResult = {id: crypto.randomUUID(), ...body}
-
-    contactById.push(newResult)
-
-    await fs.writeFile(pathContacts, JSON.stringify(contactById))
-
-    return {"message": `Contact with id ${contactId} has been update`};    
+const updateContact = async (id, newContact) => {
+  const result = await JSON.parse((await fs.readFile(pathContacts)).toString())
   
-  } catch (error) {
-    console.warn(error)
+  const index = result.findIndex(contact => contact.id === id);
+
+  console.log(index)
+
+  if (index !== -1) {
+    const updatedContact = { ...result[index], ...newContact };
+    
+    result[index] = updatedContact;
+
+    fs.writeFile(pathContacts, JSON.stringify(result));
+
+    return {"message": `Contact with id ${id} has been update`};  
+
   }
+  return null; // Contacto no encontrado
 }
 
 module.exports = {
