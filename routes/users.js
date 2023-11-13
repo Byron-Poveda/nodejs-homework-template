@@ -4,9 +4,9 @@ const { ensureAuthenticated } = require("../middlewares/validateJWT")
 const usersRouter = express.Router();
 
 module.exports = () => {
-  usersRouter.get("/signup", controller.signUp);
-  usersRouter.get("/login", controller.login);
-  usersRouter.get("/logout", ensureAuthenticated, controller.signUp);
-  usersRouter.get("/current", ensureAuthenticated, controller.signUp);
+  usersRouter.post("/signup", controller.signUp);
+  usersRouter.post("/login", controller.login);
+  usersRouter.post("/logout", ensureAuthenticated, controller.logout);
+  usersRouter.get("/current", ensureAuthenticated, controller.currentUser);
   return usersRouter;
 };

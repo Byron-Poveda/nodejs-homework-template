@@ -28,8 +28,6 @@ const signUp = async (Data) => {
      * bcrypt.compare()
      */
 
-    console.log(Data.password);
-
     const createdUser = await User.create(Data);
 
     return {
@@ -49,7 +47,7 @@ const signUp = async (Data) => {
 const login = async (email, password) => {
   try {
     const isUserExist = await User.findOne({
-      email: email
+      email
     });
 
     console.log("isUserExist:", isUserExist)
@@ -58,7 +56,7 @@ const login = async (email, password) => {
       return {
         success: false,
         result: null,
-        message: "Email or password is incorrect.",
+        message: "Email or password is wrong.",
       };
     }
 
@@ -70,27 +68,112 @@ const login = async (email, password) => {
       return {
         success: false,
         result: null,
-        message: "Email or password is incorrect.",
+        message: "Email or password is wrong.",
       };
     }
 
     const token = jwt.sign(
       {
-        fullname: `${isUserExist.name} ${isUserExist.lastname}`,
-        id: isUserExist._id,
-        rol: isUserExist.rol,
+        email: isUserExist._email,
         iat: moment().unix(),
         exp: moment().add(4, "hours").unix(),
       },
       process.env.TOKEN_SECRET
     );
 
+    const updatedUser = await User.findOneAndUpdate(
+      { email: isUserExist.email },
+      { $set: { token } },
+      { new: true } // Devuelve el usuario actualizado
+    );
+
+    console.log("updatedUser:", updatedUser)
+
     return {
       success: true,
       result: {
-        token
+        token: updatedUser.token,
       },
       message: "Login successfully."
+    }
+  } catch (error) {
+    console.log("error2:", error)
+
+    return {
+      success: false,
+      result: null,
+      message: error,
+    };
+  }
+};
+
+const logout = async (token) => {
+  try {
+    console.log("token:", token)
+
+    const isUserExist = await User.findOne({
+      token
+    });
+
+    console.log("isUserExist:", isUserExist)
+
+    if (!isUserExist) {
+      return {
+        success: false,
+        result: null,
+        message: "Not authorized.",
+      };
+    }
+    
+    await User.findOneAndUpdate(
+      { token },
+      { $set: { token: null } },
+      { new: true }
+    );
+      
+    return {
+      success: true,
+      result: {},
+      message: '',
+    }
+  } catch (error) {
+    return {
+      success: false,
+      result: null,
+      message: error,
+    };
+  }
+};
+
+const currentUser = async (token) => {
+  try {
+    console.log("token:", token)
+
+    const isUserExist = await User.findOne({
+      token
+    });
+
+    console.log("isUserExist:", isUserExist)
+
+    if (!isUserExist) {
+      return {
+        success: false,
+        result: null,
+        message: "Not authorized.",
+      };
+    }
+    
+    const response = {
+      email: isUserExist.email,
+      subscription: isUserExist.subscription,
+    }
+
+    console.log("response:", response)
+    
+    return {
+      success: true,
+      result: response,
+      message: 'Current User Successfully',
     }
   } catch (error) {
     return {
@@ -103,5 +186,7 @@ const login = async (email, password) => {
 
 module.exports = {
   signUp,
-  login
+  login,
+  logout,
+  currentUser,
 };

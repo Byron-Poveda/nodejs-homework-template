@@ -84,7 +84,7 @@ const createContact = async (Data) => {
 const updateContact = async (id, data) => {
   try {
     console.log(data);
-    const contact = await Contact.findByIdAndUpdate(id, data);
+    const contact = await Contact.findByIdAndUpdate(id, data, { new: true });
 
     console.log(contact);
 
@@ -133,13 +133,13 @@ const deleteContact = async (id) => {
 const updateStatusContact = async (id, body) => {
   try {
 
-    if(!body.favorite) return {
+    if(!body.favorite === '') return {
       success: false,
       result: null,
       message: "missing field favorite",
     }
     
-    const contact = await Contact.findByIdAndUpdate(id, body);
+    const contact = await Contact.findByIdAndUpdate(id, body, { new: true });
 
     console.log(contact);
 
