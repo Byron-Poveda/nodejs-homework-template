@@ -8,5 +8,6 @@ module.exports = () => {
   usersRouter.post("/login", controller.login);
   usersRouter.post("/logout", ensureAuthenticated, controller.logout);
   usersRouter.get("/current", ensureAuthenticated, controller.currentUser);
+  usersRouter.post("/subscription", ensureAuthenticated, controller.updateSubscriptionUser);
   return usersRouter;
 };

@@ -169,7 +169,7 @@ const currentUser = async (token) => {
     }
 
     console.log("response:", response)
-    
+
     return {
       success: true,
       result: response,
@@ -184,9 +184,56 @@ const currentUser = async (token) => {
   }
 };
 
+const updateSubscriptionUser = async (token, subscription) => {
+  try {
+
+    if(!subscription || !['starter', 'pro', 'business'].includes(subscription)) return {
+      success: false,
+      result: null,
+      message: "Invalid Subscription Type."
+    } 
+
+    console.log("token:", token)
+
+    const isUserExist = await User.findOne({
+      token
+    });
+
+    console.log("isUserExist:", isUserExist)
+
+    if (!isUserExist) {
+      return {
+        success: false,
+        result: null,
+        message: "Not authorized.",
+      };
+    }
+    
+    const userUpdate = await User.findOneAndUpdate(
+      { token },
+      { subscription },
+      { new: true }
+    );
+      
+    return {
+      success: true,
+      result: userUpdate,
+      message: 'The User subscription was updated successfully.',
+    }
+  } catch (error) {
+    console.log("error:", error);
+    return {
+      success: false,
+      result: null,
+      message: error,
+    };
+  }
+};
+
 module.exports = {
   signUp,
   login,
   logout,
   currentUser,
+  updateSubscriptionUser,
 };
