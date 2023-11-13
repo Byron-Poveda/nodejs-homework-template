@@ -1,10 +1,10 @@
-const servive = require("../services/contacts");
+const service = require("../services/contacts");
 
 const findContact = async (req, res) => {
   try {
     const { skip, limit } = req.query;
 
-    const { success, result, message } = await servive.findContact(skip, limit);
+    const { success, result, message } = await service.findContact(skip, limit);
 
     console.log(result);
     if (!success) {
@@ -29,7 +29,7 @@ const findContact = async (req, res) => {
 const findIdContact = async (req, res) => {
   try {
     const id = req.params.id;
-    const { success, result, message } = await servive.findIdContact(id);
+    const { success, result, message } = await service.findIdContact(id);
 
     console.log(result);
     if (!success) {
@@ -53,7 +53,7 @@ const findIdContact = async (req, res) => {
 
 const createContact = async (req, res) => {
   try {
-    const { success, result, message } = await servive.createContact(req.body);
+    const { success, result, message } = await service.createContact(req.body);
 
     console.log("result:", result);
     if (!success) {
@@ -79,7 +79,7 @@ const updateContact = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { success, result, message } = await servive.updateContact(id, req.body);
+    const { success, result, message } = await service.updateContact(id, req.body);
 
     console.log(result);
     if (!success) {
@@ -105,7 +105,7 @@ const deleteContact = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { success, result, message } = await servive.deleteContact(id);
+    const { success, result, message } = await service.deleteContact(id);
 
     console.log(result);
     if (!success) {
@@ -132,7 +132,7 @@ const updateStatusContact = async (req, res) => {
 
     console.log("body:", req.body)
 
-    const { success, result, message } = await servive.updateStatusContact(id, req.body);
+    const { success, result, message } = await service.updateStatusContact(id, req.body);
 
     console.log("result:", result)
 
