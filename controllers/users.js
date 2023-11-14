@@ -1,6 +1,5 @@
 const service = require("../services/users");
 const schemasValidations = require("../schemas")
-const extractTokenFromBearerHeader = require("../extractTokenFromBearerHeader")
 
 const signUp = async (req, res) => {
   try {
@@ -35,7 +34,6 @@ const signUp = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-
     const { error } = schemasValidations.schemaUser.validate(req.body);
     
     if (error) return res.status(400).json({ error: error.details[0].message });
@@ -74,9 +72,8 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    const token = extractTokenFromBearerHeader(req.headers.authorization);
 
-    const { success, result, message } = await service.logout(token);
+    const { success, result, message } = await service.logout(req.user._id);
 
     console.log("result:", result);
     console.log("success:", success);
@@ -101,9 +98,8 @@ const logout = async (req, res) => {
 
 const currentUser = async (req, res) => {
   try {
-    const token = extractTokenFromBearerHeader(req.headers.authorization);
 
-    const { success, result, message } = await service.currentUser(token);
+    const { success, result, message } = await service.currentUser(req.user);
 
     console.log("result:", result);
     console.log("success:", success);
@@ -132,11 +128,7 @@ const currentUser = async (req, res) => {
 const updateSubscriptionUser = async (req, res) => {
   try {
 
-    console.log(req.body)
-    
-    const token = extractTokenFromBearerHeader(req.headers.authorization);
-
-    const { success, result, message } = await service.updateSubscriptionUser(token, req.body.subscription);
+    const { success, result, message } = await service.updateSubscriptionUser(req.user.token, req.body.subscription);
 
     console.log("result:", result);
     console.log("success:", success);

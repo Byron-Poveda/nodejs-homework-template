@@ -74,7 +74,8 @@ const login = async (email, password) => {
 
     const token = jwt.sign(
       {
-        email: isUserExist._email,
+        id: isUserExist._id,
+        email: isUserExist.email,
         iat: moment().unix(),
         exp: moment().add(4, "hours").unix(),
       },
@@ -107,26 +108,11 @@ const login = async (email, password) => {
   }
 };
 
-const logout = async (token) => {
+const logout = async (_id) => {
   try {
-    console.log("token:", token)
 
-    const isUserExist = await User.findOne({
-      token
-    });
-
-    console.log("isUserExist:", isUserExist)
-
-    if (!isUserExist) {
-      return {
-        success: false,
-        result: null,
-        message: "Not authorized.",
-      };
-    }
-    
     await User.findOneAndUpdate(
-      { token },
+      { _id },
       { $set: { token: null } },
       { new: true }
     );
@@ -145,27 +131,12 @@ const logout = async (token) => {
   }
 };
 
-const currentUser = async (token) => {
+const currentUser = async (user) => {
   try {
-    console.log("token:", token)
-
-    const isUserExist = await User.findOne({
-      token
-    });
-
-    console.log("isUserExist:", isUserExist)
-
-    if (!isUserExist) {
-      return {
-        success: false,
-        result: null,
-        message: "Not authorized.",
-      };
-    }
     
     const response = {
-      email: isUserExist.email,
-      subscription: isUserExist.subscription,
+      email: user.email,
+      subscription: user.subscription,
     }
 
     console.log("response:", response)

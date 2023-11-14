@@ -1,13 +1,13 @@
 const express = require("express");
 const controller = require("../controllers/users");
-const { ensureAuthenticated } = require("../middlewares/validateJWT")
+const { auth } = require("../middlewares/auth")
 const usersRouter = express.Router();
 
 module.exports = () => {
   usersRouter.post("/signup", controller.signUp);
   usersRouter.post("/login", controller.login);
-  usersRouter.post("/logout", ensureAuthenticated, controller.logout);
-  usersRouter.get("/current", ensureAuthenticated, controller.currentUser);
-  usersRouter.post("/subscription", ensureAuthenticated, controller.updateSubscriptionUser);
+  usersRouter.post("/logout", auth, controller.logout);
+  usersRouter.get("/current", auth, controller.currentUser);
+  usersRouter.post("/subscription", auth, controller.updateSubscriptionUser);
   return usersRouter;
 };
