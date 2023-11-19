@@ -1,4 +1,5 @@
 const service = require("../services/contacts");
+const schemasValidations = require("../schemas")
 
 const findContact = async (req, res) => {
   try {
@@ -53,6 +54,11 @@ const findIdContact = async (req, res) => {
 
 const createContact = async (req, res) => {
   try {
+
+    const { error } = schemasValidations.schemaContact.validate(req.body);
+    
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
     const { success, result, message } = await service.createContact(req.body);
 
     console.log("result:", result);
