@@ -257,7 +257,7 @@ const updateAvatarUser = async (token, avatar) => {
     
     const userUpdate = await User.findOneAndUpdate(
       { token },
-      { avatarURL: avatar.path },
+      { avatarURL: `/avatars/${avatar.filename}` },
       { new: true }
     );
       
