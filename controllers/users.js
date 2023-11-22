@@ -154,10 +154,40 @@ const updateSubscriptionUser = async (req, res) => {
   }
 };
 
+const updateAvatarUser = async (req, res) => {
+  try {
+
+    const { success, result, message } = await service.updateAvatarUser(req.user.token, req.file);
+
+    console.log("result:", result);
+    console.log("success:", success);
+    
+    if (!success) {
+      return res.status(404).json({
+        result,
+        message,
+      });
+    }
+
+    return res.status(200).json({
+      result,
+      message,
+    });
+
+  } catch (error) {
+    console.log("error:", error);
+    return res.status(500).json({
+      result: null,
+      message: error,
+    });
+  }
+};
+
 module.exports = {
   signUp,
   login,
   logout,
   currentUser,
   updateSubscriptionUser,
+  updateAvatarUser,
 };
