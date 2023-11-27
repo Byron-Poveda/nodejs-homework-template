@@ -1,27 +1,74 @@
 const axios = require("axios");
+const controller = require('../users')
+const service = require('../../services/users')
 
-describe("Testing POST /users/signup", () => {
+describe("Testing /users/signup and /users/login", () => {
 
-    test("respond with HTTP status code 200", async () => {
-        // Cambiar el correo cada vez q se ejecute el test
-        const result = await axios.post('http://localhost:3000/api/users/signup', {
-                email: "test1@email.com",
-                password: "1234"
+    test("/users/signup respond with result 201 ok", async () => {
+        const req = {
+            body: {
+                email: 'test@email.com',
+                password: '1234'
+            }
+        }
+
+        const res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        }
+
+        const mockedSignUpResult = {
+            success: true,
+            result: {
+                email: 'test@email.com',
+                subscription: 'started'
             },
-        )
+            message: 'Sign-in successfully.',
+        }
+
+        jest.spyOn(service, 'signUp').mockResolvedValue(mockedSignUpResult)
         
-        expect(result.status).toBe(201)
-        expect(result.data.message).toBe("Sign-in successfully.")
+        await controller.signUp(req, res)
+
+        expect(res.status).toHaveBeenCalledWith(201)
+        expect(res.json).toHaveBeenCalledWith({
+            result: mockedSignUpResult.result,
+            message: 'Sign-in successfully.',
+        })
+        
     }, 10000)
 
-    test("respond with HTTP status code 200", async () => {
-        const result = await axios.post('http://localhost:3000/api/users/login', {
-                email: "test@email.com",
-                password: "1234"
+    test("/users/login respond with result 200 ok", async () => {
+        const req = {
+            body: {
+                email: 'test@email.com',
+                password: '1234'
+            }
+        }
+
+        const res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        }
+
+        const mockedLoginResult = {
+            success: true,
+            result: {
+                token: 'token123',
             },
-        )
+            message: 'Login successfully.',
+        }
 
-        expect(result.status).toBe(200)
-        expect(result.data.message).toBe("Login successfully.")
+        jest.spyOn(service, 'login').mockResolvedValue(mockedLoginResult)
+        
+        await controller.login(req, res)
+
+        expect(res.status).toHaveBeenCalledWith(200)
+        expect(res.json).toHaveBeenCalledWith({
+            result: mockedLoginResult.result,
+            message: 'Login successfully.',
+        })
+        
     }, 10000)
+
 })
