@@ -10,6 +10,6 @@ module.exports = () => {
   usersRouter.post("/logout", auth, controller.logout);
   usersRouter.get("/current", auth, controller.currentUser);
   usersRouter.post("/subscription", auth, controller.updateSubscriptionUser);
-  usersRouter.post("/avatars", auth, upload.single('avatar'), controller.updateAvatarUser);
+  usersRouter.patch("/avatars", auth, upload.single('avatar'), controller.updateAvatarUser);
   return usersRouter;
 };
